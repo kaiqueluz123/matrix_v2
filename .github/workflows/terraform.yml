@@ -17,8 +17,6 @@ on:
       name:
         # Friendly description to be shown in the UI instead of 'name'
         description: 'Insira o Nome do ambiente/variaveis"'
-        # Default value if no value is explicitly provided
-        default: 'Escreva aqui !'
         # Input has to be provided for the workflow to run
         required: true
 
