@@ -1,0 +1,63 @@
+# This workflow installs the latest version of Terraform CLI and configures the Terraform CLI configuration file
+# with an API token for Terraform Cloud (app.terraform.io). On pull request events, this workflow will run
+# `terraform init`, `terraform fmt`, and `terraform plan` (speculative plan via Terraform Cloud). On push events
+# to the main branch, `terraform apply` will be executed.
+#
+# Documentation for `hashicorp/setup-terraform` is located here: https://github.com/hashicorp/setup-terraform
+#
+# To use this workflow, you will need to complete the following setup steps.
+#
+# 
+name: '123milhas Teste'
+
+on:
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      name:
+        # Friendly description to be shown in the UI instead of 'name'
+        description: 'Insira o Nome do ambiente/variaveis"'
+        # Default value if no value is explicitly provided
+        default: 'Escreva aqui !'
+        # Input has to be provided for the workflow to run
+        required: true
+
+env: 
+  DB_HOST: ${{ secrets.DB_HOST }} 
+
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+    environment: production
+
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    - name: Terraform Init
+      run: terraform init  -var='DB_HOST=${{ secrets.DB_HOST }}' -var='DB_USER=${{ secrets.DB_USER }}' -var='DB_PASS=${{ secrets.DB_PASS }}' -var='ENV_REDIS=${{ secrets.ENV_REDIS }}' -var='AWS_ACESS_KEY=${{ secrets.AWS_ACESS_KEY }}' -var='AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}' -var='CLOUDFLARE_EMAIL=${{ secrets.CLOUDFLARE_EMAIL }}' -var='CLOUDFLARE_API_KEY=${{ secrets.CLOUDFLARE_API_KEY }}' -var='CLOUDFLARE_ZONE_ID=${{ secrets.CLOUDFLARE_ZONE_ID }}' -var='AMI_123MILHAS=${{ secrets.AMI_123MILHAS }}' -var='SG_TESTE=${{ secrets.SG_TESTE }}' -var='SSH_KEY=${{ secrets.SSH_KEY }}' -var='VERS=${{ github.event.iputs.name }}' 
+      
+    
+    # Generates an execution plan for Terraform teste 2
+    - name: Terraform Plan
+      run: terraform plan  -var='DB_HOST=${{ secrets.DB_HOST }}' -var='DB_USER=${{ secrets.DB_USER }}' -var='DB_PASS=${{ secrets.DB_PASS }}' -var='ENV_REDIS=${{ secrets.ENV_REDIS }}' -var='AWS_ACESS_KEY=${{ secrets.AWS_ACESS_KEY }}' -var='AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}' -var='CLOUDFLARE_EMAIL=${{ secrets.CLOUDFLARE_EMAIL }}' -var='CLOUDFLARE_API_KEY=${{ secrets.CLOUDFLARE_API_KEY }}' -var='CLOUDFLARE_ZONE_ID=${{ secrets.CLOUDFLARE_ZONE_ID }}' -var='AMI_123MILHAS=${{ secrets.AMI_123MILHAS }}' -var='SG_TESTE=${{ secrets.SG_TESTE }}' -var='SSH_KEY=${{ secrets.SSH_KEY }}' -var='VERS=${{ github.event.iputs.name }}' 
+      # On push to main, build or change infrastructure according to Terraform configuration files
+      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: terraform apply -auto-approve  -var='DB_HOST=${{ secrets.DB_HOST }}' -var='DB_USER=${{ secrets.DB_USER }}' -var='DB_PASS=${{ secrets.DB_PASS }}' -var='ENV_REDIS=${{ secrets.ENV_REDIS }}' -var='AWS_ACESS_KEY=${{ secrets.AWS_ACESS_KEY }}' -var='AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}' -var='CLOUDFLARE_EMAIL=${{ secrets.CLOUDFLARE_EMAIL }}' -var='CLOUDFLARE_API_KEY=${{ secrets.CLOUDFLARE_API_KEY }}' -var='CLOUDFLARE_ZONE_ID=${{ secrets.CLOUDFLARE_ZONE_ID }}' -var='AMI_123MILHAS=${{ secrets.AMI_123MILHAS }}' -var='SG_TESTE=${{ secrets.SG_TESTE }}' -var='SSH_KEY=${{ secrets.SSH_KEY }}' -var='VERS=${{ github.event.iputs.name }}' 
+      
